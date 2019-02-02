@@ -15,16 +15,20 @@ class PancakeNode:
         if type(pancakes) is int:
             self.pancakes = list(range(1, pancakes + 1))
             random.shuffle(self.pancakes)
+            self.pancakes = np.array(self.pancakes)
             self.plate = pancakes + 1
         else:  # pancakes is array
-            self.pancakes = pancakes
+            if type(pancakes) is np.ndarray:
+                self.pancakes=pancakes
+            else:
+                self.pancakes = np.array(pancakes)
             self.plate = max(pancakes) + 1
         self.g = g
         self.gap = gap
         self.pred = pred
 
     def __eq__(self, other):
-        return self.pancakes == other.pancakes
+        return np.array_equal(self.pancakes,other.pancakes)
 
     def __hash__(self):
         return hash(str(self.pancakes))
@@ -42,9 +46,9 @@ class PancakeNode:
         """
         frontier = []
         for i in range(2, len(self.pancakes)):
-            flipped = list(list(np.flip(self.pancakes[:i], axis=0)) + self.pancakes[i:])
+            flipped = np.append(np.flip(self.pancakes[:i], axis=0), self.pancakes[i:])
             frontier.append(PancakeNode(flipped, self.g + 1, self.gap, self))
-        flipped = list(np.flip(self.pancakes, axis=0))
+        flipped = np.flip(self.pancakes, axis=0)
         frontier.append(PancakeNode(flipped, self.g + 1, self.gap, self))
         return frontier
 
